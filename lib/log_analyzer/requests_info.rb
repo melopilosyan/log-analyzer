@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "set"
+
 class LogAnalyzer
   # Stores information about visits to a specific request path.
   class RequestsInfo

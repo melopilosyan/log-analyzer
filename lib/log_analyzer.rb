@@ -13,6 +13,16 @@ class LogAnalyzer
 
   attr_writer :formatter, :orderer
 
+  # @option options - struct with these attributes
+  def self.report(options)
+    formatter = options.format == "UV" ? Formatters::UniqPageViewsFormatter : Formatters::PageViewsFormatter
+    orderer = options.order == "ASC" ? Orderers::ASC : Orderers::DESC
+
+    new(options.log_file, formatter:, orderer:).report.join("\n")
+  rescue FileNotReadableError => error
+    error.message
+  end
+
   def initialize(file_path,
                  formatter: Formatters::PageViewsFormatter,
                  orderer: Orderers::DESC,

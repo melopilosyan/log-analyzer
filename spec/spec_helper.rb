@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "set"
 require "log_analyzer"
 
 RSpec.configure do |config|
