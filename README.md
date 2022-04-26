@@ -1,13 +1,19 @@
-# LogParser
+# Log Analyzer
 
-TODO: Describe me
+![](/screenshots/help-message.png?raw=true "Log Analyzer")<br/>
+
+Use the `webserver.log` as a sample.
 
 ## Installation
 
+Install Ruby 3.1.0. Clone the repo and
+
 ```bash
+cd log-analyzer
 bundle install
 ```
 
-## Usage
-
-TODO: Write usage instructions here
+#### Run tests with
+```bash
+rake test
+```
