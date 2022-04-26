@@ -5,24 +5,46 @@
 require "optparse"
 require_relative "lib/log_analyzer"
 
-options = Struct.new(:order, :format, :log_file).new
+def main(cmd_params)
+  analyzer = LogAnalyzer.new cmd_params.log_file,
+                             formatter: cmd_params.formatter,
+                             orderer: cmd_params.orderer
+  puts
+  puts analyzer.report.join("\n")
+rescue LogAnalyzer::FileNotReadableError => e
+  puts e.message
+end
+
+cmd_params = Struct.new(:order, :format, :log_file) do
+  def formatter
+    if format == "UV"
+      LogAnalyzer::Formatters::UniqPageViewsFormatter
+    else
+      LogAnalyzer::Formatters::PageViewsFormatter
+    end
+  end
+
+  def orderer
+    order == "ASC" ? LogAnalyzer::Orderers::ASC : LogAnalyzer::Orderers::DESC
+  end
+end.new
 
 option_parser = OptionParser.new do |opts|
   opts.banner = "Usage: #{__FILE__} [OPTIONS]... LOG_FILE_SOURCE"
   opts.separator ""
   opts.separator "Parse the log file given as LOG_FILE_SOURCE."
-  opts.separator "The output is the list of WEB page paths with total views counts(option value: TV)"
+  opts.separator "Output the list of paths to WEB pages with total views counts(option value: TV)"
   opts.separator "Or with unique page views counts(option value: UV)."
   opts.separator "Order results by counts in ascending(opt: ASC) or descending(opt: DESC) order."
   opts.separator ""
   opts.separator "Options:"
 
   opts.on("-f", "--format FORMAT", "select the output format - TV or UV - default TV") do |format|
-    options.format = format
+    cmd_params.format = format
   end
 
   opts.on("-o", "--order ORDER", "specify results order - default DESC") do |order|
-    options.order = order
+    cmd_params.order = order
   end
 
   opts.on_tail("-h", "--help", "Show this message") do
@@ -33,12 +55,9 @@ end
 
 option_parser.parse!
 
-options.log_file = ARGV[0]
-
-unless options.log_file
+unless (cmd_params.log_file = ARGV[0])
   puts option_parser
   exit
 end
 
-puts
-puts LogAnalyzer.report(options)
+main cmd_params
