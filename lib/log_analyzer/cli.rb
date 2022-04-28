@@ -77,7 +77,7 @@ module LogAnalyzer
       attr_reader :opts
 
       def declare_script_usage
-        opts.banner = "Usage: ./parser [OPTIONS]... LOG_FILE_SOURCE"
+        opts.banner = "Usage: ./parser [OPTIONS]... LOG_FILE_PATH"
         opts.separator ""
         opts.separator DESCRIPTION
       end
