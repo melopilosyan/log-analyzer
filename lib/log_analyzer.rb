@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "log_analyzer/agent"
-require_relative "log_analyzer/requests_info"
+lib = File.expand_path(".", __dir__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require "log_analyzer/agent"
+require "log_analyzer/requests_info"
 
 # Log file parser
 module LogAnalyzer
@@ -14,4 +17,6 @@ module LogAnalyzer
 
   autoload :Parser,   "log_analyzer/parser"
   autoload :Orderers, "log_analyzer/orderers"
+
+  autoload :Cli,      "log_analyzer/cli"
 end
