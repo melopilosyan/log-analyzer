@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "page_views_formatter"
-
 module LogAnalyzer
   module Formatters
     # Formats the unique page views report from the list of RequestsInfo objects.
