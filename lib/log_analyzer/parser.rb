@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class LogAnalyzer
+module LogAnalyzer
   # Parses given log file content into RequestsInfo objects
   class Parser
     LINE_FORMAT = %r{

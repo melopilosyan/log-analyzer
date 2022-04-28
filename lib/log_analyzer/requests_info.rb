@@ -2,7 +2,7 @@
 
 require "set"
 
-class LogAnalyzer
+module LogAnalyzer
   # Stores information about visits to a specific request path.
   class RequestsInfo
     attr_reader :path, :total_views

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class LogAnalyzer
+module LogAnalyzer
   module Formatters
     # Formats the page views report from the list of RequestsInfo objects.
     class PageViewsFormatter

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class LogAnalyzer
+module LogAnalyzer
   module Orderers
     ASC = ->(a, b) { a.last - b.last }
     DESC = ->(a, b) { b.last - a.last }

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-RSpec.describe LogAnalyzer do
+RSpec.describe LogAnalyzer::Agent do
   describe "#initialize" do
     it "instantiates the formatter & parser" do
-      analyzer = LogAnalyzer.new "file.path"
+      analyzer = described_class.new "file.path"
 
       expect(analyzer.parser).to be_a(LogAnalyzer::Parser)
       expect(analyzer.formatter).to be_a(LogAnalyzer::Formatters::PageViewsFormatter)
