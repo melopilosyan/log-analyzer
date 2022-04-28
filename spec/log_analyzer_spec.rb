@@ -1,108 +1,49 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/BlockLength
 RSpec.describe LogAnalyzer do
-  context "with invalid log file" do
-    it "raises FileNotReadableError if the file is unreadable" do
-      expect { LogAnalyzer.new("invalid.file") }.to raise_error(LogAnalyzer::FileNotReadableError)
-    end
+  describe "#initialize" do
+    it "instantiates the formatter & parser" do
+      analyzer = LogAnalyzer.new "file.path"
 
-    it "reports with EMPTY MSG" do
-      analyzer = LogAnalyzer.new "spec/log_files/malformed.log"
-
-      expect(analyzer.report).to eq([LogAnalyzer::EMPTY_MSG])
+      expect(analyzer.parser).to be_a(LogAnalyzer::Parser)
+      expect(analyzer.formatter).to be_a(LogAnalyzer::Formatters::PageViewsFormatter)
     end
   end
 
-  context "with valid log file" do
-    let(:log_file) { "spec/log_files/webserver.log" }
-    let(:analyzer) { LogAnalyzer.new log_file }
-
-    let(:views_formatter) { LogAnalyzer::Formatters::PageViewsFormatter }
-    let(:uniq_formatter) { LogAnalyzer::Formatters::UniqPageViewsFormatter }
-    let(:asc) { LogAnalyzer::Orderers::ASC }
-    let(:desc) { LogAnalyzer::Orderers::DESC }
-
-    context "with default parameters - PageViewsFormatter:DESC:Parser" do
-      let(:report) { ["/about/2 3 visits", "/contact 2 visits", "/home 1 visits"] }
-
-      it "works through constructor" do
-        expect(analyzer.report).to eq(report)
-      end
-
-      it "works through attributes assignment" do
-        analyzer.formatter = views_formatter
-        analyzer.orderer = desc
-
-        expect(analyzer.report).to eq(report)
+  describe "#parse!" do
+    context "when log file is unreadable" do
+      it "raises FileNotReadableError" do
+        expect do
+          described_class.new("invalid.file").parse!
+        end.to raise_error(LogAnalyzer::FileNotReadableError)
       end
     end
 
-    context "(with stubbed parser)" do
-      let(:parser) { PARSERISH }
-      let(:analyzer) { LogAnalyzer.new log_file, parser: }
+    context "with valid log file" do
+      it "initializes @requests with array of RequestsInfo objects and returns self" do
+        analyzer = described_class.new VALID_LOG_PATH
 
-      context "with PageViewsFormatter and ascending order" do
-        let(:report) { ["/home 1 visits", "/contact 2 visits", "/about/2 3 visits"] }
+        expect(analyzer.parse!).to be(analyzer)
 
-        it "works through constructor" do
-          analyzer = LogAnalyzer.new log_file,
-                                     formatter: views_formatter,
-                                     orderer: asc, parser: parser
-
-          expect(analyzer.report).to eq(report)
-        end
-
-        it "works through attributes assignment" do
-          analyzer.formatter = views_formatter
-          analyzer.orderer = asc
-
-          expect(analyzer.report).to eq(report)
-        end
+        expect(analyzer.requests).to be_an(Array)
+        expect(analyzer.requests.first).to be_a(LogAnalyzer::RequestsInfo)
       end
+    end
+  end
 
-      context "with UniqPageViewsFormatter and descending order" do
-        let(:report) do
-          ["/contact 2 unique views", "/about/2 2 unique views", "/home 1 unique views"]
-        end
+  describe "#analytics" do
+    it "returns formatted & ordered list of log analytics" do
+      analytics = described_class.new(
+        VALID_LOG_PATH,
+        formatter: LogAnalyzer::Formatters::UniqPageViewsFormatter,
+        orderer: LogAnalyzer::Orderers::ASC
+      ).parse!.analytics
 
-        it "works through constructor" do
-          analyzer = LogAnalyzer.new log_file,
-                                     formatter: uniq_formatter,
-                                     orderer: desc, parser: parser
+      expected_data = [
+        "/home 1 unique views", "/nested/contact 2 unique views", "/about/12 2 unique views"
+      ]
 
-          expect(analyzer.report).to eq(report)
-        end
-
-        it "works through attributes assignment" do
-          analyzer.formatter = uniq_formatter
-          analyzer.orderer = desc
-
-          expect(analyzer.report).to eq(report)
-        end
-      end
-
-      context "with UniqPageViewsFormatter and ascending order" do
-        let(:report) do
-          ["/home 1 unique views", "/contact 2 unique views", "/about/2 2 unique views"]
-        end
-
-        it "works through constructor" do
-          analyzer = LogAnalyzer.new log_file,
-                                     formatter: uniq_formatter,
-                                     orderer: asc, parser: parser
-
-          expect(analyzer.report).to eq(report)
-        end
-
-        it "works through attributes assignment" do
-          analyzer.formatter = uniq_formatter
-          analyzer.orderer = asc
-
-          expect(analyzer.report).to eq(report)
-        end
-      end
+      expect(analytics).to eq(expected_data)
     end
   end
 end
-# rubocop:enable Metrics/BlockLength

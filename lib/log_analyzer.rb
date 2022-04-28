@@ -7,34 +7,36 @@ require_relative "log_analyzer/formatters/uniq_page_views_formatter"
 
 # Log file parser
 class LogAnalyzer
-  EMPTY_MSG = "The log is empty or does not match the expected format"
-
   class FileNotReadableError < StandardError; end
 
-  attr_writer :formatter, :orderer
+  attr_reader :formatter, :parser, :requests
 
   def initialize(file_path,
                  formatter: Formatters::PageViewsFormatter,
                  orderer: Orderers::DESC,
                  parser: Parser)
-    verify_readability!(file_path)
-
-    @orderer = orderer
-    @formatter = formatter
-
-    @requests = parser.call file_path
+    @parser = parser.new file_path
+    @formatter = formatter.new orderer
   end
 
-  def report
-    result = @formatter.new(@orderer).format(@requests)
-    return [EMPTY_MSG] if result.empty?
+  # @raise FileNotReadableError
+  def parse!
+    verify_readability!
 
-    result
+    @requests = parser.parse
+    self
+  end
+
+  def analytics
+    return [] if requests.empty?
+
+    formatter.format requests
   end
 
   private
 
-  def verify_readability!(file_path)
-    File.readable?(file_path) or raise FileNotReadableError, %(Can't read "#{file_path}" file)
+  def verify_readability!
+    path = parser.file_path
+    File.readable?(path) or raise FileNotReadableError, %(Can't read "#{path}" file)
   end
 end
