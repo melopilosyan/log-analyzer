@@ -54,12 +54,13 @@ module LogAnalyzer
       end
 
       def parse(argv)
+        opts.parse! argv
+
         unless (self.log_file = argv[0])
           puts opts
           exit
         end
 
-        opts.parse! argv
         self
       end
 
