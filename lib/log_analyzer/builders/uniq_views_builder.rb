@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module LogAnalyzer
-  module Formatters
-    # Formats the unique page views report from the list of RequestsInfo objects.
-    class UniqPageViewsFormatter < PageViewsFormatter
+  module Builders
+    # Builds the unique page views report from the list of RequestsInfo objects.
+    class UniqViewsBuilder < TotalViewsBuilder
       private
 
       def visits_count(requests_info)

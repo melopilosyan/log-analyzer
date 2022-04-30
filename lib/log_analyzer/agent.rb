@@ -4,14 +4,11 @@ module LogAnalyzer
   # The coordinator class.
   # Performs file validation & parsing and analytics generation.
   class Agent
-    attr_reader :formatter, :parser, :requests
+    attr_reader :requests
 
-    def initialize(file_path,
-                   formatter: Formatters::PageViewsFormatter,
-                   orderer: Orderers::DESC,
-                   parser: Parser)
-      @parser = parser.new file_path
-      @formatter = formatter.new orderer
+    def initialize(file_path, view_builder_class:, orderer:, parser_class: Parser)
+      @parser = parser_class.new file_path
+      @view_builder = view_builder_class.new orderer
     end
 
     # @raise FileNotReadableError
@@ -25,10 +22,12 @@ module LogAnalyzer
     def analytics
       return [] if requests.empty?
 
-      formatter.format requests
+      view_builder.build_from requests
     end
 
     private
+
+    attr_reader :view_builder, :parser
 
     def verify_readability!
       path = parser.file_path

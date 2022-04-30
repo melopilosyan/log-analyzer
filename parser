@@ -2,6 +2,6 @@
 
 # frozen_string_literal: true
 
-require "./lib/log_analyzer"
+require_relative "lib/log_analyzer"
 
 LogAnalyzer::Cli.invoke
