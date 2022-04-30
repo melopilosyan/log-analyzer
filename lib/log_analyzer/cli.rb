@@ -24,10 +24,12 @@ module LogAnalyzer
     def invoke
       params = @params_parser.parse @argv
 
-      analyzer = Agent.new params.log_file, formatter: params.formatter, orderer: params.orderer
+      analyzer = Agent.new params.log_file,
+                           orderer: params.orderer,
+                           view_builder_class: params.view_builder_class
 
       analyzer.parse!.analytics.join "\n"
-    rescue FileNotReadableError => e
+    rescue FileNotReadableError, OptionParser::MissingArgument => e
       e.message
     end
 
@@ -64,8 +66,8 @@ module LogAnalyzer
         self
       end
 
-      def formatter
-        format == "UV" ? Formatters::UniqPageViewsFormatter : Formatters::PageViewsFormatter
+      def view_builder_class
+        format == "UV" ? Builders::UniqViewsBuilder : Builders::TotalViewsBuilder
       end
 
       def orderer

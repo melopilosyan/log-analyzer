@@ -10,23 +10,23 @@ module LogAnalyzer
       (\d{3}.\d{3}.\d{3}.\d{3}) # Ip-ish
     }x
 
-    attr_reader :file_path, :requests
+    attr_reader :file_path
 
     def initialize(file_path)
       @file_path = file_path
     end
 
     def parse
-      File.open(file_path, "r") do |file|
-        init_requests file
-      end
+      file = File.open file_path, "r"
 
-      requests
+      build_requests file
+    ensure
+      file.close
     end
 
     private
 
-    def init_requests(file)
+    def build_requests(file)
       cache = file.each_line.with_object({}) do |line, hash|
         line.strip!
         next if line.empty?
@@ -38,7 +38,7 @@ module LogAnalyzer
         hash[path].add_request_from ip
       end
 
-      @requests = cache.values
+      cache.values
     end
   end
 end

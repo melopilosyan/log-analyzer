@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 module LogAnalyzer
-  module Formatters
-    # Formats the page views report from the list of RequestsInfo objects.
-    class PageViewsFormatter
+  module Builders
+    # Builds the total page views report from the list of RequestsInfo objects.
+    class TotalViewsBuilder
       def initialize(orderer)
         @orderer = orderer
       end
 
-      def format(requests)
+      def build_from(requests)
         requests
           .map { |ri| [ri.path, visits_count(ri)] }
           .sort!(&@orderer)

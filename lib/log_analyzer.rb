@@ -10,9 +10,9 @@ require "log_analyzer/requests_info"
 module LogAnalyzer
   class FileNotReadableError < StandardError; end
 
-  module Formatters
-    autoload :PageViewsFormatter,     "log_analyzer/formatters/page_views_formatter"
-    autoload :UniqPageViewsFormatter, "log_analyzer/formatters/uniq_page_views_formatter"
+  module Builders
+    autoload :TotalViewsBuilder, "log_analyzer/builders/total_views_builder"
+    autoload :UniqViewsBuilder,  "log_analyzer/builders/uniq_views_builder"
   end
 
   autoload :Parser,   "log_analyzer/parser"
