@@ -14,17 +14,22 @@ RSpec.shared_examples "a page views builder" do
       cache[f].add_request_from l
     end.values
   end
+  subject { described_class.new orderer }
 
-  it "builds in ascending order" do
-    builder = described_class.new LogAnalyzer::Orderers::ASC
+  context "in ascending order" do
+    let(:orderer) { LogAnalyzer::Orderers::ASC }
 
-    expect(builder.build_from(requests)).to eq(collection_asc)
+    it "builds correct report" do
+      expect(subject.build_from(requests)).to eq(collection_asc)
+    end
   end
 
-  it "builds in descending order" do
-    builder = described_class.new LogAnalyzer::Orderers::DESC
+  context "in descending order" do
+    let(:orderer) { LogAnalyzer::Orderers::DESC }
 
-    expect(builder.build_from(requests)).to eq(collection_desc)
+    it "builds correct report" do
+      expect(subject.build_from(requests)).to eq(collection_desc)
+    end
   end
 end
 
